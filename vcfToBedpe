@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 
-import argparse, sys
+import sys
 import math, time, re
-from argparse import RawTextHelpFormatter
 
 __author__ = "Colby Chiang (cc2qe@virginia.edu)"
 __version__ = "$Revision: 0.0.1 $"
@@ -12,27 +11,40 @@ __date__ = "$Date: 2014-04-23 14:31 $"
 # define functions
 
 def get_args():
-    parser = argparse.ArgumentParser(formatter_class=RawTextHelpFormatter, description="\
+    from optparse import OptionParser
+
+    parser = OptionParser(description="\
 vcfToBedpe\n\
 author: " + __author__ + "\n\
 version: " + __version__ + "\n\
 description: Convert a VCF file to a BEDPE file")
-    parser.add_argument('-i', '--input', type=argparse.FileType('r'), default=None, help='VCF input (default: stdin)')
-    parser.add_argument('-o', '--output', type=argparse.FileType('w'), default=sys.stdout, help='Output BEDPE to write (default: stdout)')
 
-    # parse the arguments
-    args = parser.parse_args()
+    parser.add_option("-i","--input",type="string",help="VCF input (default: stdin)")
+    parser.add_option('-o', '--output', type="string", help='Output BEDPE to write (default: stdout)')
+    (options, args) = parser.parse_args()
+
+    if len(args) : 
+        parser.print_help()
+        sys.exit(2)
 
     # if no input, check if part of pipe and if so, read stdin.
-    if args.input == None:
+    if options.input is None:
         if sys.stdin.isatty():
             parser.print_help()
-            exit(1)
+            sys.exit(2)
         else:
-            args.input = sys.stdin
+            options.input = sys.stdin
+    else :
+        options.input = open(options.input) 
 
-    # send back the user input
-    return args
+    if options.output is None:
+        options.output = sys.stdout
+    else :
+        options.output = open(options.output,"w")
+
+    # send back user options 
+    return options
+
 
 class Vcf(object):
     def __init__(self):
