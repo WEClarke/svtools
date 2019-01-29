@@ -327,13 +327,13 @@ def vcfToBedpe(vcf_file, bedpe_out):
         span = [0,0]
         if 'CIPOS' in var.info :
             span = map(int, var.info['CIPOS'].split(','))
-        s1 = b1 + span[0] - 1
+        s1 = max(0, b1 + span[0] - 1)
         e1 = b1 + span[1]
 
         span = [0,0]
         if 'CIEND' in var.info :
             span = map(int, var.info['CIEND'].split(','))
-        s2 = b2 + span[0] - 1
+        s2 = max(0, b2 + span[0] - 1)
         e2 = b2 + span[1]
 
         # write bedpe
